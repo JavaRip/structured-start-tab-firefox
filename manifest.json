@@ -5,6 +5,12 @@
   "description": "Show a structured page when a new tab is opened.",
   "author": "Rich Boakes",
   "default_locale": "en",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{1e7f2c10-a249-4273-a00e-de596b95ef22}",
+      "strict_min_version": "42.0"
+    }
+  },
   "permissions": [
     "tabs",
     "storage",
