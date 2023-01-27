@@ -24,7 +24,6 @@
     "https://calendar.google.com/calendar/*"
   ],
   "background": {
-    "service_worker": "src/js/background.js",
     "scripts": ["src/js/background.js"],
     "type": "module"
   },
