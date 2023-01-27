@@ -46,7 +46,18 @@ function getEventInfo(strEvent, timeZone, email) {
   };
   let dtSTART = '';
   let dtEnd = '';
+
+  // lines are consolidated as they may be split over multiple lines - when they are split, the line begins with a space
+  const consolidatedLines = [];
   for (const line of strEvent) {
+    if (line.startsWith(' ')) {
+      consolidatedLines[consolidatedLines.length - 1] += line.substring(1);
+    } else {
+      consolidatedLines.push(line);
+    }
+  }
+
+  for (const line of consolidatedLines) {
     if (line.includes('SUMMARY')) { result.title = line.split(':')[1]; }
     if (line.includes('DTSTART')) { dtSTART = line.split(':')[1]; }
     if (line.includes('DTEND')) { dtEnd = line.split(':')[1]; }
@@ -56,12 +67,23 @@ function getEventInfo(strEvent, timeZone, email) {
       const eventUnique = `${uid} ${email.trim()}`;
       result.url = email != null ? `https://calendar.google.com/calendar/u/${email}/r/eventedit/` + btoa(`${eventUnique}`) : '';
     }
+    if (line.includes('ATTENDEE')) {
+      const details = line.split(';');
+      if (details.length > 4 && details[4].split('=')[1] === email) {
+        const attendeeDetails = details[3].split('=');
+        if (attendeeDetails.length > 1) {
+          const attendeeStatus = details[3].split('=')[1];
+          result.declined = attendeeStatus === 'DECLINED';
+        }
+      }
+    }
   }
 
   // add time for all day events
   if (dtSTART.length === 8) { dtSTART += 'T000000Z'; }
   if (dtEnd.length === 8) { dtEnd += 'T235959Z'; }
 
+  // Date parsing
   let year = parseInt(dtSTART.substr(0, 4));
   let month = parseInt(dtSTART.substr(4, 2)) - 1;
   let day = parseInt(dtSTART.substr(6, 2));
@@ -72,25 +94,17 @@ function getEventInfo(strEvent, timeZone, email) {
   result.utcDate = utcDate;
   const startDateNumber = new Date(utcDate);
   if (startDateNumber < new Date(Date.now())) { return null; }
-  result.startDate = startDateNumber.toLocaleString('en-GB', { timeZone: timeZone });
-  result.title = getDateString(startDateNumber) + result.title;
+  result.startDate = startDateNumber.toLocaleString('en-GB', { timeZone });
   year = parseInt(dtEnd.substr(0, 4));
   month = parseInt(dtEnd.substr(4, 2)) - 1;
   day = parseInt(dtEnd.substr(6, 2));
   hour = parseInt(dtEnd.substr(9, 2));
   min = parseInt(dtEnd.substr(11, 2));
   sec = parseInt(dtEnd.substr(13, 2));
-  result.endDate = new Date(Date.UTC(year, month, day, hour, min, sec)).toLocaleString('en-GB', { timeZone: timeZone });
+  result.endDate = new Date(Date.UTC(year, month, day, hour, min, sec)).toLocaleString('en-GB', { timeZone });
+
+  // Don't return events that have been declined
+  if (result.declined) { return null; }
+
   return result;
-}
-function getDateString(date) {
-  const today = new Date();
-  const a = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-  const b = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-  const diff = Math.floor((b - a) / (1000 * 60 * 60 * 24));
-  if (diff >= 1) {
-    return '+' + diff.toString() + ' ';
-  }
-  if (isNaN(date.getHours())) { return ''; }
-  return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0') + ' ';
 }
