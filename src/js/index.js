@@ -136,8 +136,8 @@ function setFavicon(elem, url) {
     elem.prepend(favicon);
   }
 
-  if (url) { 
-    favicon.src = `${new URL(url).origin}/favicon.ico`; 
+  if (url) {
+    favicon.src = `${new URL(url).origin}/favicon.ico`;
   }
 }
 function prepareFavicons() {
