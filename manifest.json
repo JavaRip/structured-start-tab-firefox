@@ -24,8 +24,8 @@
     "https://calendar.google.com/calendar/*"
   ],
   "background": {
-    "scripts": ["src/js/background.js"],
-    "type": "module"
+    "page": "src/background.html",
+    "persistent": false
   },
   "icons": {
     "16": "src/style/i/16.png",
