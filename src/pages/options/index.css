@@ -1,5 +1,6 @@
-@import url("vars.css");
-@import url("toast.css");
+@import url("../../style/vars.css");
+@import url("../../style/toast.css");
+@import url("../../style/animations.css");
 
 body {
   background: var(--bg-light);
@@ -9,14 +10,23 @@ body {
   align-items: center;
 }
 
-h1, h2 {
+h1,
+h2 {
   padding: 0 1rem;
 
 }
-h1 { font-size: 1.25rem;}
-h2 { font-size: 1.1rem;}
 
-header, main, #backup {
+h1 {
+  font-size: 1.25rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+header,
+main,
+#backup {
   width: 100%;
   max-width: var(--page-width);
 }
@@ -49,8 +59,12 @@ label {
   align-items: center;
 }
 
-label>input {
-  width: auto;
+label>input,
+label>select {
+  width: 80%;
+  padding: 0.2rem;
+  border: none;
+  border-radius: 0.2rem;
 }
 
 label>input[type=number] {
@@ -94,7 +108,6 @@ button {
 }
 
 #btnIndex {
-  font-size: 100%;
   text-decoration: none;
   flex-grow: 0;
   margin-right: 1em;
@@ -108,12 +121,16 @@ input[type="file"] {
   visibility: hidden;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   filter: brightness(150%);
 }
 
+button:disabled {
+  filter: brightness(75%);
+}
 
-section, footer {
+section,
+footer {
   display: flex;
   flex: 1 1 auto;
   align-items: stretch;
@@ -125,7 +142,8 @@ section, footer {
   box-shadow: 0rem 0.125rem 0.25rem var(--fg-light-alpha);
 }
 
-label, section {
+label,
+section {
   overflow: hidden;
 }
 

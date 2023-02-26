@@ -1,6 +1,7 @@
-import { parseIcs } from './lib/icalparse.js';
-import { OPTS } from './lib/options.js';
-import * as options from './lib/options.js';
+import { syncFullContent } from './services/sync.service.js';
+import { updateAgendasBackground } from './services/agenda.service.js';
+
+
 // define the menu item
 const menuItems = [
   {
@@ -66,7 +67,7 @@ const menuItems = [
 ];
 const urls = [
   chrome.runtime.getURL('src/index.html'),
-  chrome.runtime.getURL('src/options-page.html'),
+  chrome.runtime.getURL('src/pages/options/index.html'),
   'chrome://newtab/',
 ];
 // message sender used whenever any of our
@@ -84,8 +85,15 @@ function menuInstaller() {
     menuItem.contexts = ['page', 'link'];
     chrome.contextMenus.create(menuItem);
   }
+
+  // Update agendas every 10 minutes
   chrome.alarms.create('agendaUpdate', {
-    periodInMinutes: 15,
+    periodInMinutes: 10,
+  });
+
+  // Save page to the storage every 10 minutes
+  chrome.alarms.create('storageSavePage', {
+    periodInMinutes: 10,
   });
 }
 function commandReceived(command) {
@@ -100,33 +108,20 @@ function commandReceived(command) {
   });
 }
 
-/** Update all agendas */
-export async function updateAgendasBackground() {
-  await options.load();
-  for (let index = 0; index < OPTS.agendas.length; index++) {
-    const agenda = OPTS.agendas[index];
-    if (!agenda.agendaUrl || agenda.agendaUrl === chrome.i18n.getMessage('default_agenda_link')) { continue; }
-    try {
-      const response = await fetch(agenda.agendaUrl);
-      const text = await response.text();
-      await parseIcs(text, index, agenda.email);
-    } catch (e) { }
+const handleAlarm = (details) => {
+  switch (details.name) {
+    case 'agendaUpdate':
+      updateAgendasBackground();
+      break;
+    case 'storageSavePage':
+      syncFullContent();
+      break;
+    default:
+      break;
   }
-  await options.write();
-}
-
-/** Update specific agenda */
-export async function updateAgendaBackground(agenda, index) {
-  if (!agenda.agendaUrl || agenda.agendaUrl === chrome.i18n.getMessage('default_agenda_link')) { return; }
-  try {
-    const response = await fetch(agenda.agendaUrl);
-    const text = await response.text();
-    await parseIcs(text, index, agenda.email);
-  } catch (e) { }
-  await options.write();
-}
+};
 
 chrome.runtime.onInstalled.addListener(menuInstaller);
 chrome.contextMenus.onClicked.addListener(menuClicked);
-chrome.alarms.onAlarm.addListener(updateAgendasBackground);
+chrome.alarms.onAlarm.addListener(handleAlarm);
 chrome.commands.onCommand.addListener(commandReceived);

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Structured Start Tab Options</title>
-<link rel="stylesheet" href="style/options-page.css">
-<script type=module src="./js/options-page.js"></script>
+<link rel="stylesheet" href="index.css">
+<script type=module src="index.js"></script>
 
 <header>
   <h1>Structured Start Tab Options</h1>
-  <a id=btnIndex data-locale="return_index" href=index.html data-info=>Return</a>
+  <a id=btnIndex data-locale="return_index" href=../../index.html data-info=>Return</a>
 </header>
 
 <main id=settings>
@@ -29,7 +29,6 @@
       <p>Caution: Importing will replace all existing tabs.</p>
     </div>
     <button data-locale="import" id=import>Import</button>
-    <input id=fileupload type=file />
   </label>
 
   <label>
@@ -84,3 +83,16 @@
   </section>
 </template>
 
+<template id="template_button">
+  <label name=label>
+    <button></button>
+    <p name=text></p>
+  </label>
+</template>
+
+<template id="template_dropdown">
+  <label name=label>
+    <select></select>
+    <p name=text></p>
+  </label>
+</template>
