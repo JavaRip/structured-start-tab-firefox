@@ -1,7 +1,7 @@
 {
-  "name": "structured-start-tab",
-  "version": "1.10.0",
-  "description": "Structured Start Tab",
+  "name": "structured-start-tab-beta",
+  "version": "1.11.0-beta",
+  "description": "Structured Start Tab (beta)",
   "author": "Rich Boakes <rich@boakes.org>",
   "contributors": [
     "Rich Boakes <rich@boakes.org>",
@@ -17,9 +17,12 @@
     "zip": "rm sst.zip;rm sst.xpi;find . -name '.DS_Store' -type f -delete;zip -u -8 -v -r sst.zip src _locales manifest.json release.md;cp sst.zip sst.xpi;echo 'bump versions in releases.md, manifest.json and package.json...'",
     "all": "npm run validatelogs;npm run zip;",
     "preversion": "npm run lint",
-    "version": "node update-manifest-version.js; git add manifest.json;",
+    "version": "node update-manifest-version.js; git add .;",
     "postversion": "npm run all",
-    "validatelogs": "if grep -qr 'console.log' src/; then echo 'WARNING: console.log were left in the code!'; fi"
+    "validatelogs": "if grep -qr 'console.log' src/; then echo 'WARNING: console.log were left in the code!'; fi",
+    "firebase:start": "npm run serve --prefix providers/firebase",
+    "firebase:deploy": "npm run deploy --prefix providers/firebase",
+    "simple-sst-storage:start": "npm start --prefix providers/simple-sst-storage"
   },
   "repository": {
     "type": "git",
@@ -52,5 +55,9 @@
       "no-restricted-syntax": 0,
       "no-unused-expressions": 0
     }
+  },
+  "dependencies": {
+    "firebase-admin": "^11.3.0",
+    "firebase-functions": "^4.1.0"
   }
 }
