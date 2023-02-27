@@ -25,8 +25,7 @@
     "<all_urls>"
   ],
   "background": {
-    "page": "src/background.html",
-    "persistent": false
+    "scripts": ["src/js/background.js"]
   },
   "icons": {
     "16": "src/style/i/16.png",
